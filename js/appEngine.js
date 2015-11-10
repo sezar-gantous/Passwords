@@ -101,7 +101,7 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
 
 
      str+= '<li id="li-'+ serviceName +'" class="list-group-item">';
-     str+= '<a href="'+serviceName+'" target="_blank" title="'+serviceName+'">';
+     str+= '<a id="info-'+serviceName +'" href="#'+serviceName+'" title="'+serviceName+'">';
      str+= serviceName;
      str+= '</a>'
           
@@ -111,8 +111,15 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
                '<span id="spanEdit-'+ serviceName +'" class="glyphicon glyphicon-pencil"></span> </button>';
      
      str += '</li>';
+     str += '<div class="extraInfo alert alert-info" role="alert" id="show-'+serviceName+'">';
+     str += '<p><b>User Name: </b>' +userName+'</p>';
+     str += '<p><b>Password: </b>' +password+'</p>';
+     str += '</div>';
       $("#services").append(str);
 
+    $('#info-'+serviceName).on('click',function (){
+      $('#show-'+serviceName +".extraInfo").toggle();
+    });
 
     }
 
