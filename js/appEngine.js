@@ -100,13 +100,12 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
      var password = service.password;
 
 
-     str+= '<li id="li-'+ name +'" class="list-group-item">';
+     str+= '<li id="li-'+ serviceName +'" class="list-group-item">';
      str+= '<a href="'+serviceName+'" target="_blank" title="'+serviceName+'">';
-     str+= name;
+     str+= serviceName;
      str+= '</a>'
-     str+= 'The password is every '+(password/60000) + " mins"
-     
-     str+= '<button id="remove-'+ serviceName +'" class="alert alert-danger remove" onClick="removeService('+serviceName+');" title="delete Service">'+
+          
+     str+= '<button id="remove-'+ serviceName +'" class="alert alert-danger remove" onClick="removeService('+"'"+serviceName+"'"+');" title="delete Service">'+
                '<span id="spanRemove-'+ serviceName +'" class="glyphicon glyphicon-remove"></span> </button>';
      str+= '<button id="edit-'+ serviceName +'" class="alert alert-info edit" onClick="editing('+"'"+serviceName+"'"+','+"'"+password+"'"+','+"'"+userName+"'"+');" title="edit Service">'+
                '<span id="spanEdit-'+ serviceName +'" class="glyphicon glyphicon-pencil"></span> </button>';
