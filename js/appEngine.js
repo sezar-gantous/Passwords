@@ -25,7 +25,10 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
 
 
       $("#info").hide();
-
+      
+      $("#userName").val('');
+      $("#service").val('');
+      $("#password").val('');
     }
 
 
@@ -41,7 +44,7 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
 
     function editing (serviceName,password,userName) {
       //preparing modal
-      $("#modalLabel").html('Edite'+serviceName);
+      $("#modalLabel").html('Edite '+serviceName);
       $("#editUserName").val(userName);
       $("#editService").val(serviceName);
       $("#editPassword").val(password);
@@ -53,11 +56,11 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
            db.child(serviceName).remove();
         //creat a new one....
         db.child($("#editService").val()).set({
-          service: $("#editService").val()+'',
-          username: $("#editUserName").val()+'',
-          passweord: $("#editPassword").val()+''
+          service: $("#editService").val(),
+          userName: $("#editUserName").val(),
+          password: $("#editPassword").val()
         });
-
+console.log(serviceName);
         $('#editModal').modal('hide');
 
       });
@@ -161,13 +164,13 @@ function loadFromJson () {
 }
 
 //everytime a service is deleted this will be called
-db.on("child_removed", function(snapshot) {
+/*db.on("child_removed", function(snapshot) {
   var deletedPost = snapshot.val();
   console.log("removed");
-});
+});*/
 
 //everytime a service is deleted this will be called
-db.on("child_changed", function(snapshot) {
+/*db.on("child_changed", function(snapshot) {
   var changedPost = snapshot.val();
   console.log("updated");
-});
+});*/
