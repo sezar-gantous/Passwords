@@ -4,7 +4,7 @@
 *Nov 20 2015
 */
 
-var db = new Firebase("https://whatsmypassword.firebaseio.com/services");
+var db = new Firebase("https://whats-next.firebaseio.com/services");
 var service;
 
 // Attach an asynchronous callback to read data
