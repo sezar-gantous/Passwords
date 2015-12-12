@@ -1,5 +1,9 @@
-var empty = '<li class="list-group-item" id="empty">No Services to show... Add a service NOW!</li>';
+var db = new Firebase("https://whats-next.firebaseio.com/services");
+var service;
 
+
+var empty = '<li class="list-group-item" id="empty">No Services to show... Add a service NOW!</li>';
+var passwordArray = [];
 
     $(document).ready(function() {
       loadFromJson();
@@ -17,7 +21,9 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
         var password = $("#password").val();
        
 
-       db.child(service).set({
+var totalPasswords = (passwordArray === null)? 0: passwordArray.length;
+
+       db.child(totalPasswords).set({
         service: service,
         userName: userName,
         password: password
@@ -26,41 +32,41 @@ var empty = '<li class="list-group-item" id="empty">No Services to show... Add a
 
       $("#info").hide();
       
-      $("#userName").val('');
-      $("#service").val('');
-      $("#password").val('');
+      $("#userName,#service,#password").val('');
     }
 
 
 
 
-    function removeService (service) {
+    function removeService (id) {
 
-       // console.log("removing");
+         // console.log("removing");
+         passwordArray.splice(id, 1);
        //remove from firebase
-      db.child(service).remove();
+      db.set(passwordArray);
 
     }
 
-    function editing (serviceName,password,userName) {
+    function editing (id,serviceName,password,userName) {
       //preparing modal
       $("#modalLabel").html('Edite '+serviceName);
       $("#editUserName").val(userName);
       $("#editService").val(serviceName);
       $("#editPassword").val(password);
 
+      $("#editSave").off();
       //add click event for save button
       $("#editSave").click(function(){
         
-        //remove current 
-           db.child(serviceName).remove();
+
         //creat a new one....
-        db.child($("#editService").val()).set({
+        db.child(id).update({
           service: $("#editService").val(),
           userName: $("#editUserName").val(),
           password: $("#editPassword").val()
         });
-console.log(serviceName);
+  
+              //console.log(serviceName);
         $('#editModal').modal('hide');
 
       });
@@ -70,58 +76,33 @@ console.log(serviceName);
 
 
 
-/*make a fake ajax call to the url; which will wake up the dyno */
-    // function wakeUp (url,name) {
-    //  console.log(url);
-    //   // an indecations to the use the server is still waking up
-    //     $("#li-"+name).css({"z-index":"-1"}).addClass("disabled");
-    //   $.ajax(url+'')
-    //   .fail(function( jqXHR, textStatus){
-    //    /* It's not really working...???*/
-    //      console.dir("faild: "+jqXHR.status + "  "+ textStatus);
-    //     if(jqXHR.status === 200)
-    //     {
-    //       console.log("status:200");
-    //     }
-    //     // an indecations to the use the server is done waking up
-    //     $("#li-"+name).css({"z-index":"1"}).removeClass("disabled");
-    //   })
-    //   .done(function(){
-    //     // an indecations to the use the server is done waking up
-    //     $("#li-"+name).css({"z-index":"1"}).removeClass("disabled");
-    //   })
-    //   .always(function(){
-       
-    //   });
-    // }
 
-
-    function print (service) {
+    function print (service,id) {
      var str = '';
      var serviceName = service.service;
      var userName = service.userName;
      var password = service.password;
 
 
-     str+= '<li id="li-'+ serviceName +'" class="list-group-item">';
-     str+= '<a id="info-'+serviceName +'" href="#'+serviceName+'" title="'+serviceName+'">';
+     str+= '<li id="li-'+ id +'" class="list-group-item">';
+     str+= '<a id="info-'+id +'" href="#'+id+'" title="'+serviceName+'">';
      str+= serviceName;
      str+= '</a>'
           
-     str+= '<button id="remove-'+ serviceName +'" class="alert alert-danger remove" onClick="removeService('+"'"+serviceName+"'"+');" title="delete Service">'+
-               '<span id="spanRemove-'+ serviceName +'" class="glyphicon glyphicon-remove"></span> </button>';
-     str+= '<button id="edit-'+ serviceName +'" class="alert alert-info edit" onClick="editing('+"'"+serviceName+"'"+','+"'"+password+"'"+','+"'"+userName+"'"+');" title="edit Service">'+
-               '<span id="spanEdit-'+ serviceName +'" class="glyphicon glyphicon-pencil"></span> </button>';
+     str+= '<button id="remove-'+ id +'" class="alert alert-danger remove" onClick="removeService('+id+');" title="delete Service">'+
+               '<span id="spanRemove-'+ id +'" class="glyphicon glyphicon-remove"></span> </button>';
+     str+= '<button id="edit-'+ id +'" class="alert alert-info edit" onClick="editing('+id+",'"+serviceName+"'"+','+"'"+password+"'"+','+"'"+userName+"'"+');" title="edit Service">'+
+               '<span id="spanEdit-'+ id +'" class="glyphicon glyphicon-pencil"></span> </button>';
      
      str += '</li>';
-     str += '<div class="extraInfo alert alert-info" role="alert" id="show-'+serviceName+'">';
+     str += '<div class="extraInfo alert alert-info" role="alert" id="show-'+id+'">';
      str += '<p><b>User Name: </b>' +userName+'</p>';
      str += '<p><b>Password: </b>' +password+'</p>';
      str += '</div>';
       $("#services").append(str);
 
-    $('#info-'+serviceName).on('click',function (){
-      $('#show-'+serviceName +".extraInfo").toggle();
+    $('#info-'+id).on('click',function (){
+      $('#show-'+id +".extraInfo").toggle();
     });
 
     }
@@ -129,7 +110,7 @@ console.log(serviceName);
 
 /*load all data from firebase*/
 function loadFromJson () {
-  
+    var index;
 
   // Attach an asynchronous callback to read data
   db.on("value", function(snapshot) {
@@ -138,12 +119,18 @@ function loadFromJson () {
             // iterate through data
         //clear the list first
           $("#services").empty();
+
+          index=0;   
+          //empty array first
+          passwordArray = [];
+
         snapshot.forEach(function(s) {
           //console.log(s.val().stat);
             var service = s.val();
-          
+             passwordArray.push(service); 
            //print out html with data
-           print(service);
+           print(service,index);
+           index++;
         });
     }
     else{
@@ -162,15 +149,3 @@ function loadFromJson () {
    
 
 }
-
-//everytime a service is deleted this will be called
-/*db.on("child_removed", function(snapshot) {
-  var deletedPost = snapshot.val();
-  console.log("removed");
-});*/
-
-//everytime a service is deleted this will be called
-/*db.on("child_changed", function(snapshot) {
-  var changedPost = snapshot.val();
-  console.log("updated");
-});*/
